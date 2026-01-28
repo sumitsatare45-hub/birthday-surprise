@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Happy Birthday ❤️</title>
 
 <style>
@@ -16,73 +17,61 @@ body{
     overflow:hidden;
     font-family:Arial, sans-serif;
     background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 /* Background slideshow */
 #bg{
     position:fixed;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
     object-fit:cover;
-    filter:blur(8px) brightness(0.6);
     z-index:-2;
     transition:opacity 1s ease-in-out;
 }
 
-/* Floating photo container */
-.photo-wall{
-    position:absolute;
+/* Dark overlay */
+.overlay{
+    position:fixed;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
-    overflow:hidden;
-    z-index:0;
-}
-
-/* Small floating photos */
-.photo{
-    position:absolute;
-    width:120px;
-    height:150px;
-    object-fit:cover;
-    border-radius:15px;
-    box-shadow:0 5px 20px rgba(255,255,255,0.4);
-    animation: float 8s linear infinite;
-}
-
-@keyframes float{
-    0%{transform:translateY(100vh) rotate(0deg);}
-    100%{transform:translateY(-120vh) rotate(360deg);}
+    background:rgba(0,0,0,0.45);
+    z-index:-1;
 }
 
 /* Center Text */
 .center-text{
-    position:absolute;
-    width:100%;
-    top:40%;
     text-align:center;
     color:white;
     z-index:2;
 }
 
 .center-text h1{
-    font-size:60px;
-    text-shadow:0 0 10px #ff4da6,
-                0 0 20px #ff1a75,
-                0 0 40px #ff1a75;
-    animation: pulse 2s infinite alternate;
+    font-size: clamp(30px, 6vw, 65px);
+    text-shadow:
+        0 0 10px #ff4da6,
+        0 0 20px #ff1a75,
+        0 0 40px #ff1a75,
+        0 0 60px #ff1a75;
+    animation:pulse 2s infinite alternate;
 }
 
 @keyframes pulse{
     from{transform:scale(1);}
-    to{transform:scale(1.08);}
+    to{transform:scale(1.07);}
 }
 
-/* Hearts */
+/* Floating hearts */
 .heart{
-    position:absolute;
+    position:fixed;
     color:red;
-    font-size:20px;
-    animation:fall 5s linear infinite;
+    animation:fall linear forwards;
 }
 
 @keyframes fall{
@@ -95,8 +84,7 @@ body{
 <body>
 
 <img id="bg" src="img (1).jpg">
-
-<div class="photo-wall" id="wall"></div>
+<div class="overlay"></div>
 
 <div class="center-text">
     <h1>Happy Birthday My Love ❤️</h1>
@@ -104,47 +92,58 @@ body{
 
 <script>
 
-/* Background slideshow */
-let totalImages = 91;
+let totalImages = 91;  
 let index = 1;
 let bg = document.getElementById("bg");
 
-setInterval(function(){
-    bg.style.opacity = 0;
-    setTimeout(function(){
-        index++;
-        if(index > totalImages){
-            index = 1;
-        }
-        bg.src = "img%20(" + index + ").jpg";
-        bg.style.opacity = 1;
-    },800);
-},4000);
-
-/* Create floating small photos */
-let wall = document.getElementById("wall");
-
-for(let i=1; i<=30; i++){
-    let img = document.createElement("img");
-    img.src = "img%20(" + i + ").jpg";
-    img.className = "photo";
-    img.style.left = Math.random()*100 + "vw";
-    img.style.animationDuration = (6 + Math.random()*5) + "s";
-    wall.appendChild(img);
+/* Preload next image to avoid blank flash */
+function preload(src){
+    let img = new Image();
+    img.src = src;
 }
 
-/* Floating hearts */
+/* Slideshow */
+function changeImage(){
+
+    index++;
+    if(index > totalImages){
+        index = 1;
+    }
+
+    let nextImage = "img (" + index + ").jpg";
+    preload(nextImage);
+
+    bg.style.opacity = 0;
+
+    setTimeout(function(){
+        bg.src = nextImage;
+        bg.style.opacity = 1;
+    },800);
+}
+
+setInterval(changeImage, 3000);
+
+
+/* Floating Hearts */
 setInterval(function(){
+
     let heart = document.createElement("div");
     heart.className="heart";
     heart.innerHTML="❤️";
-    heart.style.left=Math.random()*100+"vw";
-    heart.style.fontSize=(15+Math.random()*20)+"px";
+
+    heart.style.left = Math.random()*100 + "vw";
+    heart.style.fontSize = (15 + Math.random()*25) + "px";
+    heart.style.animationDuration = (3 + Math.random()*3) + "s";
+
     document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),5000);
-},300);
+
+    setTimeout(()=>heart.remove(),6000);
+
+},400);
 
 </script>
 
 </body>
 </html>
+
+
